@@ -1,0 +1,10 @@
+goblog is a toy blog written in Google Go as a pet project
+to teach myself Go.
+
+It makes use of Go's built in HTTP server, closures, templates
+and template function creation and usage and JSON marshalling and
+unmarshalling.
+
+Blog entries are saved in JSON format on disk, in reverse order of creation
+for simplicity. The submission page is not protected in any way, although
+that could be done fairly simply.
