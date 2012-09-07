@@ -77,7 +77,12 @@ func makeTemplateHandler(fn templateFunc, tmpl string) http.HandlerFunc {
 
 // mainPage is the main page served on "/"
 func mainPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
-	t.Execute(w, blogState)
+	if r.URL.String() == "/" {
+		t.Execute(w, blogState)
+	} else {
+		http.NotFound(w, r)
+		return
+	}
 }
 
 // submitPage is the submission page served on "/submit/"
