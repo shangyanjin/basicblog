@@ -60,7 +60,6 @@ func mainMenu(b *blog.Blog) {
 			for index, e := range b.Entries {
 				if e.ID == id {
 					i = index
-					fmt.Println(i)
 					break
 				}
 			}
