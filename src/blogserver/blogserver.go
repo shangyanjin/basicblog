@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./blog"
+	"blog"
 	"fmt"
 	"html/template"
 	"net/http"
