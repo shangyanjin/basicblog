@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sort"
 	"time"
 )
 
@@ -80,6 +81,7 @@ func submitPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
 		}
 
 		blogState.AddEntry(newEntry)
+		sort.Sort(blog.ByDate{blogState.Entries})
 
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
@@ -114,6 +116,8 @@ func main() {
 	if err != nil {
 		panic("Blog entries could not be loaded")
 	}
+
+	sort.Sort(blog.ByDate{blogState.Entries})
 
 	deferCleanup()
 

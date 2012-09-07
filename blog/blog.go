@@ -8,9 +8,14 @@ import (
 	"time"
 )
 
+// Type alias for sort.Interface
+type BlogEntries []BlogEntry
+type ByID struct{ BlogEntries }
+type ByDate struct{ BlogEntries }
+
 // Blog represents a blog with all of the entries belonging to it.
 type Blog struct {
-	Entries []BlogEntry
+	Entries BlogEntries
 }
 
 // BlogEntry represents a single blog entry.
@@ -55,11 +60,36 @@ func (b *Blog) Save(fn string) error {
 
 // AddEntry adds a single entry to the front of this blog.
 func (b *Blog) AddEntry(e *BlogEntry) {
-	if len(b.Entries) > 0 {
-		e.ID = b.Entries[0].ID + 1
-		b.Entries = append([]BlogEntry{*e}, b.Entries...)
-	} else {
-		e.ID = 1
-		b.Entries = append(b.Entries, *e)
+	var highestId int = 0
+
+	for _, e := range b.Entries {
+		if e.ID > highestId {
+			highestId = e.ID
+		}
 	}
+
+	nextId := highestId + 1
+	e.ID = nextId
+
+	b.Entries = append(b.Entries, *e)
+}
+
+// Implements sort.Interface.Len()
+func (e BlogEntries) Len() int {
+	return len(e)
+}
+
+// Implements sort.Interface.Swap()
+func (e BlogEntries) Swap(i, j int) {
+	e[i], e[j] = e[j], e[i]
+}
+
+// Implements sort.Interface.Less(), sorting the posts by descending date
+func (e ByDate) Less(i, j int) bool {
+	return e.BlogEntries[i].Date.After(e.BlogEntries[j].Date)
+}
+
+// Implements sort.Interface.Less(), sorting the posts by ascending IDs
+func (e ByID) Less(i, j int) bool {
+	return e.BlogEntries[i].ID < e.BlogEntries[j].ID
 }
