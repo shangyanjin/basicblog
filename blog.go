@@ -10,22 +10,32 @@ import (
 	"time"
 )
 
-type templateFunc func(http.ResponseWriter, *http.Request, *template.Template)
-
 const (
 	mainTemplate   = "main.html"
 	submitTemplate = "submit.html"
 )
 
+type templateFunc func(http.ResponseWriter, *http.Request, *template.Template)
+
+type blogEntry struct {
+	ID      int
+	Title   string
+	Content string
+	Date    time.Time
+}
+
+type mainContent struct {
+	Entries []blogEntry
+}
+
 var templateCache map[string]*template.Template
 var blog mainContent
+var funcMap template.FuncMap = template.FuncMap{
+	"formatTime": FormatTime,
+}
 
 func FormatTime(t time.Time) string {
 	return t.Format(time.RFC822Z)
-}
-
-var funcMap template.FuncMap = template.FuncMap{
-	"formatTime": FormatTime,
 }
 
 func makeTemplateHandler(fn templateFunc, tmpl string) http.HandlerFunc {
@@ -36,6 +46,7 @@ func makeTemplateHandler(fn templateFunc, tmpl string) http.HandlerFunc {
 			tmp = val
 		} else {
 			var err error
+
 			tmp, err = template.New(tmpl).Funcs(funcMap).ParseFiles(tmpl)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -47,17 +58,6 @@ func makeTemplateHandler(fn templateFunc, tmpl string) http.HandlerFunc {
 
 		fn(w, r, tmp)
 	}
-}
-
-type blogEntry struct {
-	ID      int
-	Title   string
-	Content string
-	Date    time.Time
-}
-
-type mainContent struct {
-	Entries []blogEntry
 }
 
 func readEntries() (data mainContent, err error) {
