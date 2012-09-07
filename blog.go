@@ -31,10 +31,10 @@ type mainContent struct {
 var templateCache map[string]*template.Template
 var blog mainContent
 var funcMap template.FuncMap = template.FuncMap{
-	"formatTime": FormatTime,
+	"formatTime": formatTime,
 }
 
-func FormatTime(t time.Time) string {
+func formatTime(t time.Time) string {
 	return t.Format(time.RFC822Z)
 }
 
