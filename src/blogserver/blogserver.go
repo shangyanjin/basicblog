@@ -2,7 +2,9 @@ package main
 
 import (
 	"blog"
+	"bytes"
 	"fmt"
+	"github.com/knieriem/markdown"
 	"html/template"
 	"net/http"
 	"os"
@@ -28,12 +30,24 @@ var blogState *blog.Blog
 
 // Functions exported into templates
 var funcMap template.FuncMap = template.FuncMap{
-	"formatTime": formatTime,
+	"formatTime": tmplFormatTime,
+	"markdown":   tmplMarkdown,
 }
 
-// formatTime formats a Time object into the default RFC822Z representation.
-func formatTime(t time.Time) string {
+// tmplFormatTime formats a Time object into the default RFC822Z representation.
+func tmplFormatTime(t time.Time) string {
 	return t.Format(time.RFC822Z)
+}
+
+// tmplMarkdown formats a given string using markdown
+func tmplMarkdown(t string) template.HTML {
+	p := markdown.NewParser(&markdown.Extensions{Smart: true})
+
+	inbuf := bytes.NewBufferString(t)
+	outbuf := bytes.NewBufferString("")
+	p.Markdown(inbuf, markdown.ToHTML(outbuf))
+
+	return template.HTML(outbuf.String())
 }
 
 // makeTemplateHandler loads from disk or from cache the template passed by

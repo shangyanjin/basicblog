@@ -26,7 +26,7 @@
                     <h2>{{.Title}}</h2>
                     <span>{{.Date | formatTime}}</span>
                 </div>
-                <p>{{.Content}}</p>
+                {{.Content | markdown}}
             </div>
             {{end}}
         </div>
