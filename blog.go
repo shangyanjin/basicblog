@@ -100,12 +100,19 @@ func submitPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
 			return
 		}
 
-		content.Entries = append([]blogEntry{blogEntry{
-			ID:      content.Entries[0].ID + 1,
+		newEntry := blogEntry{
 			Title:   r.FormValue("title"),
 			Content: r.FormValue("content"),
 			Date:    time.Now(),
-		}}, content.Entries...)
+		}
+
+		if len(content.Entries) > 0 {
+			newEntry.ID = content.Entries[0].ID + 1
+			content.Entries = append([]blogEntry{newEntry}, content.Entries...)
+		} else {
+			newEntry.ID = 1
+			content.Entries = append(content.Entries, newEntry)
+		}
 
 		writeEntries(content)
 
