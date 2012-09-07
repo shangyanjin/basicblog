@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 )
 
@@ -16,6 +18,7 @@ const (
 )
 
 var templateCache map[string]*template.Template
+var blog mainContent
 
 func FormatTime(t time.Time) string {
 	return t.Format(time.RFC822Z)
@@ -89,13 +92,7 @@ func writeEntries(content mainContent) error {
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
-	entries, err := readEntries()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	t.Execute(w, entries)
+	t.Execute(w, blog)
 }
 
 func submitPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
@@ -105,27 +102,19 @@ func submitPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
 			return
 		}
 
-		content, err := readEntries()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		newEntry := blogEntry{
 			Title:   r.FormValue("title"),
 			Content: r.FormValue("content"),
 			Date:    time.Now(),
 		}
 
-		if len(content.Entries) > 0 {
-			newEntry.ID = content.Entries[0].ID + 1
-			content.Entries = append([]blogEntry{newEntry}, content.Entries...)
+		if len(blog.Entries) > 0 {
+			newEntry.ID = blog.Entries[0].ID + 1
+			blog.Entries = append([]blogEntry{newEntry}, blog.Entries...)
 		} else {
 			newEntry.ID = 1
-			content.Entries = append(content.Entries, newEntry)
+			blog.Entries = append(blog.Entries, newEntry)
 		}
-
-		writeEntries(content)
 
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
@@ -137,8 +126,28 @@ func submitPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
 	}
 }
 
+func deferCleanup() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	go func() {
+		for sig := range c {
+			fmt.Printf("Ctrl-C (%s) caught, saving state...\n", sig)
+			writeEntries(blog)
+			os.Exit(0)
+		}
+	}()
+}
+
 func main() {
+	var err error
 	templateCache = make(map[string]*template.Template)
+
+	deferCleanup()
+
+	if blog, err = readEntries(); err != nil {
+		panic("Blog entries could not be loaded")
+	}
 
 	http.HandleFunc("/", makeTemplateHandler(mainPage, mainTemplate))
 	http.HandleFunc("/submit/", makeTemplateHandler(submitPage, submitTemplate))
