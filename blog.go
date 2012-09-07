@@ -11,8 +11,8 @@ import (
 type templateFunc func(http.ResponseWriter, *http.Request, *template.Template)
 
 const (
-	mainTemplate   = "template/main.html"
-	submitTemplate = "template/submit.html"
+	mainTemplate   = "main.html"
+	submitTemplate = "submit.html"
 )
 
 func FormatTime(t time.Time) string {
@@ -47,7 +47,7 @@ type mainContent struct {
 }
 
 func readEntries() (data mainContent, err error) {
-	f, err := os.Open("entries.json")
+	f, err := os.Open("data/entries.json")
 	if err != nil {
 		return
 	}
@@ -65,7 +65,7 @@ func readEntries() (data mainContent, err error) {
 }
 
 func writeEntries(content mainContent) error {
-	f, err := os.Create("entries.json")
+	f, err := os.Create("data/entries.json")
 	if err != nil {
 		return err
 	}
