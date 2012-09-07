@@ -15,6 +15,8 @@ const (
 	submitTemplate = "submit.html"
 )
 
+var templateCache map[string]*template.Template
+
 func FormatTime(t time.Time) string {
 	return t.Format(time.RFC822Z)
 }
@@ -25,10 +27,19 @@ var funcMap template.FuncMap = template.FuncMap{
 
 func makeTemplateHandler(fn templateFunc, tmpl string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tmp, err := template.New(tmpl).Funcs(funcMap).ParseFiles(tmpl)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		var tmp *template.Template
+
+		if val, ok := templateCache[tmpl]; ok {
+			tmp = val
+		} else {
+			var err error
+			tmp, err = template.New(tmpl).Funcs(funcMap).ParseFiles(tmpl)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			templateCache[tmpl] = tmp
 		}
 
 		fn(w, r, tmp)
@@ -127,6 +138,8 @@ func submitPage(w http.ResponseWriter, r *http.Request, t *template.Template) {
 }
 
 func main() {
+	templateCache = make(map[string]*template.Template)
+
 	http.HandleFunc("/", makeTemplateHandler(mainPage, mainTemplate))
 	http.HandleFunc("/submit/", makeTemplateHandler(submitPage, submitTemplate))
 	http.Handle("/static/",
