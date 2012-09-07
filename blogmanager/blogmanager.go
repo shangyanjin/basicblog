@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/FliPPeh/goblog/blog"
+	"github.com/FliPPeh/goblog"
 	"fmt"
 )
 
