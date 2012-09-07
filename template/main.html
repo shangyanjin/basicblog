@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Blog</title>
+        <link rel="stylesheet" href="/static/style.css"  />
+    </head>
+
+    <body>
+        <h1 id="title">var b *blog.Blog</h1>
+        <div id="menu" style="clear: left;">
+            <p class="menutitle">Posts</p>
+            {{range .Entries}}
+            <a href="#{{.ID}}">{{.Title}}</a><br />
+            {{end}}
+
+            <p class="menutitle">Tools</p>
+            <a href="/submit/">Submit</a>
+        </div>
+
+        <div id="content">
+            {{len .Entries}} Blog entries
+            {{range .Entries}}
+            <div class="entry">
+                <a name="{{.ID}}"></a>
+                <div class="title">
+                    <h2>{{.Title}}</h2>
+                    <span>{{.Date | formatTime}}</span>
+                </div>
+                <p>{{.Content}}</p>
+            </div>
+            {{end}}
+        </div>
+    </body>
+</html>

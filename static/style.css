@@ -1,0 +1,91 @@
+@import url(http://fonts.googleapis.com/css?family=Marmelad);
+
+body
+{
+    font-family: 'Marmelad';
+    font-size:16pt;
+    background-color:#ffffff;
+}
+
+h1 {color:#000000;margin-bottom:0px;}
+h2 {color:#000000;}
+h3 {color:#000000;}
+
+a:link, a:visited, a:active, a:hover
+{
+    text-decoration:none;
+    font-weight:bold;
+    color:#634142;
+}
+
+a:active, a:hover
+{
+    text-decoration:underline;
+}
+
+#title {
+    padding:5px;
+    border-bottom:1px solid #000000;
+    margin-bottom:20px;
+}
+
+#menu {
+    width:14%;
+    float:right;
+    line-height:18px;
+}
+
+.menutitle
+{
+    font-weight:bold;
+    border-top:1px dashed #000000;
+    margin-top:15px;
+}
+
+#content {
+    margin:auto;
+    width:80%;
+    float:left;
+}
+
+.entry {
+    margin-top:20px;
+}
+
+.entry > .title {
+    margin-top: 20px;
+    margin-bottom: 2px;
+}
+
+#submission > h2 {
+    color:#375EAB;
+    border-bottom: 1px dashed;
+    width:20%;
+}
+
+#submission > input, textarea {
+    font-family: Marmelade;
+    font-size:14pt;
+
+    border: 1px solid;
+}
+
+#submission > textarea {
+    width:512px;
+    height:512px;
+}
+
+.entry > .title > h2 {
+    margin:0px;
+    border-bottom: 1px dashed;
+    width:20%;
+    padding:3px;
+    color:#375EAB;
+}
+
+.entry > .title > span {
+    padding-left:3px;
+    color:#375EAB;
+}
+
+.entry > p { padding: 5px; }
