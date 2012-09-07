@@ -1,7 +1,7 @@
 package main
 
 import (
-	"goblog/blog"
+	"github.com/FliPPeh/goblog/blog"
 	"bytes"
 	"fmt"
 	"github.com/knieriem/markdown"
